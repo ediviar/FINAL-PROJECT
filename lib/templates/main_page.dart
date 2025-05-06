@@ -1,6 +1,6 @@
 import 'package:final_project/pages/list_page.dart';
-import 'package:final_project/pages/setting_page.dart';
 import 'package:final_project/pages/tamu_page.dart';
+import 'package:final_project/templates/routes.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -58,11 +58,9 @@ class _MainPageState extends State<MainPage> {
             ),
             tooltip: 'Settings',
             onPressed: () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingPage(),
-                ),
+                MyRoutes.settingRoute,
               );
             },
           ),

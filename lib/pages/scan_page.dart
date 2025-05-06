@@ -2,7 +2,7 @@ import 'package:final_project/db/tabel/tamu_tabel.dart';
 import 'package:final_project/db/tamu_db.dart';
 import 'package:final_project/db/app_db.dart';
 import 'package:final_project/main.dart';
-import 'package:final_project/templates/scanner_page.dart';
+import 'package:final_project/templates/routes.dart';
 import 'package:flutter/material.dart';
 
 class ScanPage extends StatefulWidget {
@@ -20,6 +20,17 @@ class _ScanPageState extends State<ScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xff007D3C),
+        title: Text(
+          'Scan Visitor',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -46,11 +57,9 @@ class _ScanPageState extends State<ScanPage> {
                       context,
                       'Scanner',
                       Icons.qr_code_scanner,
-                      () => Navigator.push(
+                      () => Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => ScannerPage(),
-                        ),
+                        MyRoutes.scannerRoute
                       ),
                     ),
                     const SizedBox(height: 25),
@@ -148,7 +157,7 @@ class _ScanPageState extends State<ScanPage> {
                         ),
                         textAlign: TextAlign.left,
                       ),
-                      TextFormField(
+                      TextField(
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,

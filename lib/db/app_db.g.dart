@@ -60,6 +60,19 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _tujuanMeta = const VerificationMeta('tujuan');
+  @override
+  late final GeneratedColumn<String> tujuan = GeneratedColumn<String>(
+    'tujuan',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 250,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _tglMasukMeta = const VerificationMeta(
     'tglMasuk',
   );
@@ -101,6 +114,7 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     kode,
     nama,
     alamat,
+    tujuan,
     tglMasuk,
     tglKeluar,
     status,
@@ -143,6 +157,14 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
       );
     } else if (isInserting) {
       context.missing(_alamatMeta);
+    }
+    if (data.containsKey('tujuan')) {
+      context.handle(
+        _tujuanMeta,
+        tujuan.isAcceptableOrUnknown(data['tujuan']!, _tujuanMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tujuanMeta);
     }
     if (data.containsKey('tgl_masuk')) {
       context.handle(
@@ -193,6 +215,11 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
             DriftSqlType.string,
             data['${effectivePrefix}alamat'],
           )!,
+      tujuan:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}tujuan'],
+          )!,
       tglMasuk: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}tgl_masuk'],
@@ -220,6 +247,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
   final String kode;
   final String nama;
   final String alamat;
+  final String tujuan;
   final DateTime? tglMasuk;
   final DateTime? tglKeluar;
   final String status;
@@ -228,6 +256,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     required this.kode,
     required this.nama,
     required this.alamat,
+    required this.tujuan,
     this.tglMasuk,
     this.tglKeluar,
     required this.status,
@@ -239,6 +268,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     map['kode'] = Variable<String>(kode);
     map['nama'] = Variable<String>(nama);
     map['alamat'] = Variable<String>(alamat);
+    map['tujuan'] = Variable<String>(tujuan);
     if (!nullToAbsent || tglMasuk != null) {
       map['tgl_masuk'] = Variable<DateTime>(tglMasuk);
     }
@@ -255,6 +285,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
       kode: Value(kode),
       nama: Value(nama),
       alamat: Value(alamat),
+      tujuan: Value(tujuan),
       tglMasuk:
           tglMasuk == null && nullToAbsent
               ? const Value.absent()
@@ -277,6 +308,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
       kode: serializer.fromJson<String>(json['kode']),
       nama: serializer.fromJson<String>(json['nama']),
       alamat: serializer.fromJson<String>(json['alamat']),
+      tujuan: serializer.fromJson<String>(json['tujuan']),
       tglMasuk: serializer.fromJson<DateTime?>(json['tglMasuk']),
       tglKeluar: serializer.fromJson<DateTime?>(json['tglKeluar']),
       status: serializer.fromJson<String>(json['status']),
@@ -290,6 +322,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
       'kode': serializer.toJson<String>(kode),
       'nama': serializer.toJson<String>(nama),
       'alamat': serializer.toJson<String>(alamat),
+      'tujuan': serializer.toJson<String>(tujuan),
       'tglMasuk': serializer.toJson<DateTime?>(tglMasuk),
       'tglKeluar': serializer.toJson<DateTime?>(tglKeluar),
       'status': serializer.toJson<String>(status),
@@ -301,6 +334,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     String? kode,
     String? nama,
     String? alamat,
+    String? tujuan,
     Value<DateTime?> tglMasuk = const Value.absent(),
     Value<DateTime?> tglKeluar = const Value.absent(),
     String? status,
@@ -309,6 +343,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     kode: kode ?? this.kode,
     nama: nama ?? this.nama,
     alamat: alamat ?? this.alamat,
+    tujuan: tujuan ?? this.tujuan,
     tglMasuk: tglMasuk.present ? tglMasuk.value : this.tglMasuk,
     tglKeluar: tglKeluar.present ? tglKeluar.value : this.tglKeluar,
     status: status ?? this.status,
@@ -319,6 +354,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
       kode: data.kode.present ? data.kode.value : this.kode,
       nama: data.nama.present ? data.nama.value : this.nama,
       alamat: data.alamat.present ? data.alamat.value : this.alamat,
+      tujuan: data.tujuan.present ? data.tujuan.value : this.tujuan,
       tglMasuk: data.tglMasuk.present ? data.tglMasuk.value : this.tglMasuk,
       tglKeluar: data.tglKeluar.present ? data.tglKeluar.value : this.tglKeluar,
       status: data.status.present ? data.status.value : this.status,
@@ -332,6 +368,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
           ..write('kode: $kode, ')
           ..write('nama: $nama, ')
           ..write('alamat: $alamat, ')
+          ..write('tujuan: $tujuan, ')
           ..write('tglMasuk: $tglMasuk, ')
           ..write('tglKeluar: $tglKeluar, ')
           ..write('status: $status')
@@ -341,7 +378,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
 
   @override
   int get hashCode =>
-      Object.hash(id, kode, nama, alamat, tglMasuk, tglKeluar, status);
+      Object.hash(id, kode, nama, alamat, tujuan, tglMasuk, tglKeluar, status);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -350,6 +387,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
           other.kode == this.kode &&
           other.nama == this.nama &&
           other.alamat == this.alamat &&
+          other.tujuan == this.tujuan &&
           other.tglMasuk == this.tglMasuk &&
           other.tglKeluar == this.tglKeluar &&
           other.status == this.status);
@@ -360,6 +398,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
   final Value<String> kode;
   final Value<String> nama;
   final Value<String> alamat;
+  final Value<String> tujuan;
   final Value<DateTime?> tglMasuk;
   final Value<DateTime?> tglKeluar;
   final Value<String> status;
@@ -368,6 +407,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     this.kode = const Value.absent(),
     this.nama = const Value.absent(),
     this.alamat = const Value.absent(),
+    this.tujuan = const Value.absent(),
     this.tglMasuk = const Value.absent(),
     this.tglKeluar = const Value.absent(),
     this.status = const Value.absent(),
@@ -377,18 +417,21 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     required String kode,
     required String nama,
     required String alamat,
+    required String tujuan,
     this.tglMasuk = const Value.absent(),
     this.tglKeluar = const Value.absent(),
     required String status,
   }) : kode = Value(kode),
        nama = Value(nama),
        alamat = Value(alamat),
+       tujuan = Value(tujuan),
        status = Value(status);
   static Insertable<VisitorData> custom({
     Expression<int>? id,
     Expression<String>? kode,
     Expression<String>? nama,
     Expression<String>? alamat,
+    Expression<String>? tujuan,
     Expression<DateTime>? tglMasuk,
     Expression<DateTime>? tglKeluar,
     Expression<String>? status,
@@ -398,6 +441,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
       if (kode != null) 'kode': kode,
       if (nama != null) 'nama': nama,
       if (alamat != null) 'alamat': alamat,
+      if (tujuan != null) 'tujuan': tujuan,
       if (tglMasuk != null) 'tgl_masuk': tglMasuk,
       if (tglKeluar != null) 'tgl_keluar': tglKeluar,
       if (status != null) 'status': status,
@@ -409,6 +453,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     Value<String>? kode,
     Value<String>? nama,
     Value<String>? alamat,
+    Value<String>? tujuan,
     Value<DateTime?>? tglMasuk,
     Value<DateTime?>? tglKeluar,
     Value<String>? status,
@@ -418,6 +463,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
       kode: kode ?? this.kode,
       nama: nama ?? this.nama,
       alamat: alamat ?? this.alamat,
+      tujuan: tujuan ?? this.tujuan,
       tglMasuk: tglMasuk ?? this.tglMasuk,
       tglKeluar: tglKeluar ?? this.tglKeluar,
       status: status ?? this.status,
@@ -439,6 +485,9 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     if (alamat.present) {
       map['alamat'] = Variable<String>(alamat.value);
     }
+    if (tujuan.present) {
+      map['tujuan'] = Variable<String>(tujuan.value);
+    }
     if (tglMasuk.present) {
       map['tgl_masuk'] = Variable<DateTime>(tglMasuk.value);
     }
@@ -458,6 +507,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
           ..write('kode: $kode, ')
           ..write('nama: $nama, ')
           ..write('alamat: $alamat, ')
+          ..write('tujuan: $tujuan, ')
           ..write('tglMasuk: $tglMasuk, ')
           ..write('tglKeluar: $tglKeluar, ')
           ..write('status: $status')
@@ -483,6 +533,7 @@ typedef $$VisitorTableCreateCompanionBuilder =
       required String kode,
       required String nama,
       required String alamat,
+      required String tujuan,
       Value<DateTime?> tglMasuk,
       Value<DateTime?> tglKeluar,
       required String status,
@@ -493,6 +544,7 @@ typedef $$VisitorTableUpdateCompanionBuilder =
       Value<String> kode,
       Value<String> nama,
       Value<String> alamat,
+      Value<String> tujuan,
       Value<DateTime?> tglMasuk,
       Value<DateTime?> tglKeluar,
       Value<String> status,
@@ -524,6 +576,11 @@ class $$VisitorTableFilterComposer
 
   ColumnFilters<String> get alamat => $composableBuilder(
     column: $table.alamat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tujuan => $composableBuilder(
+    column: $table.tujuan,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -572,6 +629,11 @@ class $$VisitorTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get tujuan => $composableBuilder(
+    column: $table.tujuan,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get tglMasuk => $composableBuilder(
     column: $table.tglMasuk,
     builder: (column) => ColumnOrderings(column),
@@ -608,6 +670,9 @@ class $$VisitorTableAnnotationComposer
 
   GeneratedColumn<String> get alamat =>
       $composableBuilder(column: $table.alamat, builder: (column) => column);
+
+  GeneratedColumn<String> get tujuan =>
+      $composableBuilder(column: $table.tujuan, builder: (column) => column);
 
   GeneratedColumn<DateTime> get tglMasuk =>
       $composableBuilder(column: $table.tglMasuk, builder: (column) => column);
@@ -654,6 +719,7 @@ class $$VisitorTableTableManager
                 Value<String> kode = const Value.absent(),
                 Value<String> nama = const Value.absent(),
                 Value<String> alamat = const Value.absent(),
+                Value<String> tujuan = const Value.absent(),
                 Value<DateTime?> tglMasuk = const Value.absent(),
                 Value<DateTime?> tglKeluar = const Value.absent(),
                 Value<String> status = const Value.absent(),
@@ -662,6 +728,7 @@ class $$VisitorTableTableManager
                 kode: kode,
                 nama: nama,
                 alamat: alamat,
+                tujuan: tujuan,
                 tglMasuk: tglMasuk,
                 tglKeluar: tglKeluar,
                 status: status,
@@ -672,6 +739,7 @@ class $$VisitorTableTableManager
                 required String kode,
                 required String nama,
                 required String alamat,
+                required String tujuan,
                 Value<DateTime?> tglMasuk = const Value.absent(),
                 Value<DateTime?> tglKeluar = const Value.absent(),
                 required String status,
@@ -680,6 +748,7 @@ class $$VisitorTableTableManager
                 kode: kode,
                 nama: nama,
                 alamat: alamat,
+                tujuan: tujuan,
                 tglMasuk: tglMasuk,
                 tglKeluar: tglKeluar,
                 status: status,

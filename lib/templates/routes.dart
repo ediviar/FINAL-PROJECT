@@ -4,7 +4,7 @@ import 'package:final_project/pages/scan_page.dart';
 import 'package:final_project/pages/setting_page.dart';
 import 'package:final_project/pages/tamu_page.dart';
 import 'package:final_project/templates/main_page.dart';
-import 'package:final_project/templates/scanner_page.dart';
+import 'package:final_project/templates/scanner.dart';
 import 'package:final_project/templates/splash_screen.dart';
 
 class MyRoutes {
@@ -26,5 +26,5 @@ final routes = {
   MyRoutes.tamuRoute: (context) => const TamuPage(),
   MyRoutes.listVisitorRoute: (context) => const ListPage(),
   MyRoutes.settingRoute: (context) => const SettingPage(),
-  MyRoutes.scannerRoute: (context) => const ScannerPage(),
+  MyRoutes.scannerRoute: (context) => const Scanner(),
 };

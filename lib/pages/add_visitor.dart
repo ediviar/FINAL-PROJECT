@@ -1,41 +1,47 @@
 import 'package:flutter/material.dart';
 
 class AddVisitor extends StatefulWidget {
-  
-  final String? name;
+  final String? kode;
+  final String? nama;
+  final String? alamat;
+  final String? tujuan;
   final String? status;
-  final String? project;
   
   const AddVisitor({
     super.key,
-    this.name,
+    this.kode,
+    this.nama,
+    this.alamat,
+    this.tujuan,
     this.status,
-    this.project
-    });
+  });
 
   @override
   State<AddVisitor> createState() => _AddVisitorState();
 }
 
 class _AddVisitorState extends State<AddVisitor> {
-final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  final _nameController = TextEditingController();
-  final _projectController = TextEditingController();
-  var typeAbsen = 'masuk';
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  final _namaController = TextEditingController();
+  final _alamatController = TextEditingController();
+  final _tujuanController = TextEditingController();
+  var typeAbsen = 'Masuk';
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    _nameController.text = widget.name ?? '';
-    _projectController.text = widget.status ?? '';
+    _namaController.text = widget.nama ?? '';
+    _alamatController.text = widget.alamat ?? '';
+    _tujuanController.text = widget.tujuan ?? '';
     super.initState();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _projectController.dispose();
+    _namaController.dispose();
+    _alamatController.dispose();
+    _tujuanController.dispose();
     super.dispose();
   }
 
@@ -53,16 +59,69 @@ final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
           child: Column(
             spacing: 16,
             children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: EdgeInsets.only(top: 200),
+                  child: Column(
+                    children: [
+                      Card(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(0),
+                          child: Image.asset(
+                            'images/user.png',
+                            width: 200,
+                            height: 200,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
               TextField(
-                controller: _projectController,
+                controller: _namaController,
                 decoration: InputDecoration(
-                  labelText: 'Project Name',
-                  hintText: widget.name,
+                  labelText: 'Nama',
+                  hintText: widget.nama,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.clear),
                     onPressed: () {
-                      _projectController.clear();
+                      _namaController.clear();
+                    },
+                  ),
+                ),
+              ),
+              TextField(
+                controller: _alamatController,
+                decoration: InputDecoration(
+                  labelText: 'Alamat',
+                  hintText: widget.alamat,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _alamatController.clear();
+                    },
+                  ),
+                ),
+              ),
+              TextField(
+                controller: _tujuanController,
+                decoration: InputDecoration(
+                  labelText: 'Tujuan',
+                  hintText: widget.tujuan,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _tujuanController.clear();
                     },
                   ),
                 ),
@@ -92,10 +151,11 @@ final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
                   child: Text('Simpan'),
                   onPressed: () {
                     if(_formKey.currentState?.validate() ?? false) {
-                      final name = _nameController.text;
-                      final project = _projectController.text;
-                      String type = typeAbsen;
-                      Navigator.pop(context, {'name': name, 'status':type , 'project': project});
+                      final nama = _namaController.text;
+                      final alamat = _alamatController.text;
+                      final tujuan = _tujuanController.text;
+                      String status = typeAbsen;
+                      Navigator.pop(context, {'nama': nama, 'alamat':alamat, 'tujuan':tujuan, 'status':status});
                     }
                   }, 
                 ),

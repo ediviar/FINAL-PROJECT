@@ -2,8 +2,9 @@ import 'package:final_project/db/tabel/tamu_tabel.dart';
 import 'package:final_project/db/tamu_db.dart';
 import 'package:final_project/db/app_db.dart';
 import 'package:final_project/main.dart';
-import 'package:final_project/templates/routes.dart';
+import 'package:final_project/templates/scanner.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -13,7 +14,7 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
-  String? _result;
+  Barcode? _result;
   final db = VisitorDb(getIt<AppDatabase>());
   final visitor = <Visitor>[];
 
@@ -57,10 +58,7 @@ class _ScanPageState extends State<ScanPage> {
                       context,
                       'Scanner',
                       Icons.qr_code_scanner,
-                      () => Navigator.pushNamed(
-                        context,
-                        MyRoutes.scannerRoute
-                      ),
+                      () => _openScan(context),
                     ),
                     const SizedBox(height: 25),
                     Padding(
@@ -114,17 +112,26 @@ class _ScanPageState extends State<ScanPage> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    _result != null
-                        ? '$_result'
-                        : 'No. Anggota',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                    if (_result != null)
+                      Text(
+                        '${_result!.code}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                    else 
+                      Text(
+                        'No. Anggota',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                 ],
               ),
             ),
@@ -157,7 +164,8 @@ class _ScanPageState extends State<ScanPage> {
                         ),
                         textAlign: TextAlign.left,
                       ),
-                      TextField(
+                      Text(
+                        "Okta Sius Edi",
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -309,5 +317,10 @@ class _ScanPageState extends State<ScanPage> {
         ),
       ),
     );
+  }
+
+  Future _openScan(BuildContext context) async {
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (c) => Scanner()));
+    _result = result;
   }
 }

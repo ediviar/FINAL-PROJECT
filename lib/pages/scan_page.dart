@@ -1,5 +1,4 @@
-import 'package:final_project/db/tabel/tamu_tabel.dart';
-import 'package:final_project/db/tamu_db.dart';
+import 'package:final_project/db/visitor_db.dart';
 import 'package:final_project/db/app_db.dart';
 import 'package:final_project/main.dart';
 import 'package:final_project/templates/scanner.dart';
@@ -16,7 +15,7 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   Barcode? _result;
   final db = VisitorDb(getIt<AppDatabase>());
-  final visitor = <Visitor>[];
+  final visitors = <Visitor>[];
 
   @override
   Widget build(BuildContext context) {

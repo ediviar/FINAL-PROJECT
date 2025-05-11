@@ -3,11 +3,11 @@
 part of 'app_db.dart';
 
 // ignore_for_file: type=lint
-class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
+class $VisitorsTable extends Visitors with TableInfo<$VisitorsTable, Visitor> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $VisitorTable(this.attachedDatabase, [this._alias]);
+  $VisitorsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -26,13 +26,10 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
   late final GeneratedColumn<String> kode = GeneratedColumn<String>(
     'kode',
     aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
+    true,
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _namaMeta = const VerificationMeta('nama');
   @override
@@ -40,10 +37,7 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     'nama',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -53,10 +47,7 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     'alamat',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 255),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -66,10 +57,7 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     'tujuan',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 250,
-    ),
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 255),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -101,10 +89,7 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
     'status',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 50,
-    ),
+    additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 50),
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
@@ -123,10 +108,10 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'visitor';
+  static const String $name = 'visitors';
   @override
   VerificationContext validateIntegrity(
-    Insertable<VisitorData> instance, {
+    Insertable<Visitor> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -139,8 +124,6 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
         _kodeMeta,
         kode.isAcceptableOrUnknown(data['kode']!, _kodeMeta),
       );
-    } else if (isInserting) {
-      context.missing(_kodeMeta);
     }
     if (data.containsKey('nama')) {
       context.handle(
@@ -192,19 +175,18 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  VisitorData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Visitor map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return VisitorData(
+    return Visitor(
       id:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
             data['${effectivePrefix}id'],
           )!,
-      kode:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}kode'],
-          )!,
+      kode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kode'],
+      ),
       nama:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -237,23 +219,23 @@ class $VisitorTable extends Visitor with TableInfo<$VisitorTable, VisitorData> {
   }
 
   @override
-  $VisitorTable createAlias(String alias) {
-    return $VisitorTable(attachedDatabase, alias);
+  $VisitorsTable createAlias(String alias) {
+    return $VisitorsTable(attachedDatabase, alias);
   }
 }
 
-class VisitorData extends DataClass implements Insertable<VisitorData> {
+class Visitor extends DataClass implements Insertable<Visitor> {
   final int id;
-  final String kode;
+  final String? kode;
   final String nama;
   final String alamat;
   final String tujuan;
   final DateTime? tglMasuk;
   final DateTime? tglKeluar;
   final String status;
-  const VisitorData({
+  const Visitor({
     required this.id,
-    required this.kode,
+    this.kode,
     required this.nama,
     required this.alamat,
     required this.tujuan,
@@ -265,7 +247,9 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['kode'] = Variable<String>(kode);
+    if (!nullToAbsent || kode != null) {
+      map['kode'] = Variable<String>(kode);
+    }
     map['nama'] = Variable<String>(nama);
     map['alamat'] = Variable<String>(alamat);
     map['tujuan'] = Variable<String>(tujuan);
@@ -279,10 +263,10 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     return map;
   }
 
-  VisitorCompanion toCompanion(bool nullToAbsent) {
-    return VisitorCompanion(
+  VisitorsCompanion toCompanion(bool nullToAbsent) {
+    return VisitorsCompanion(
       id: Value(id),
-      kode: Value(kode),
+      kode: kode == null && nullToAbsent ? const Value.absent() : Value(kode),
       nama: Value(nama),
       alamat: Value(alamat),
       tujuan: Value(tujuan),
@@ -298,14 +282,14 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     );
   }
 
-  factory VisitorData.fromJson(
+  factory Visitor.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return VisitorData(
+    return Visitor(
       id: serializer.fromJson<int>(json['id']),
-      kode: serializer.fromJson<String>(json['kode']),
+      kode: serializer.fromJson<String?>(json['kode']),
       nama: serializer.fromJson<String>(json['nama']),
       alamat: serializer.fromJson<String>(json['alamat']),
       tujuan: serializer.fromJson<String>(json['tujuan']),
@@ -319,7 +303,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'kode': serializer.toJson<String>(kode),
+      'kode': serializer.toJson<String?>(kode),
       'nama': serializer.toJson<String>(nama),
       'alamat': serializer.toJson<String>(alamat),
       'tujuan': serializer.toJson<String>(tujuan),
@@ -329,18 +313,18 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     };
   }
 
-  VisitorData copyWith({
+  Visitor copyWith({
     int? id,
-    String? kode,
+    Value<String?> kode = const Value.absent(),
     String? nama,
     String? alamat,
     String? tujuan,
     Value<DateTime?> tglMasuk = const Value.absent(),
     Value<DateTime?> tglKeluar = const Value.absent(),
     String? status,
-  }) => VisitorData(
+  }) => Visitor(
     id: id ?? this.id,
-    kode: kode ?? this.kode,
+    kode: kode.present ? kode.value : this.kode,
     nama: nama ?? this.nama,
     alamat: alamat ?? this.alamat,
     tujuan: tujuan ?? this.tujuan,
@@ -348,8 +332,8 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
     tglKeluar: tglKeluar.present ? tglKeluar.value : this.tglKeluar,
     status: status ?? this.status,
   );
-  VisitorData copyWithCompanion(VisitorCompanion data) {
-    return VisitorData(
+  Visitor copyWithCompanion(VisitorsCompanion data) {
+    return Visitor(
       id: data.id.present ? data.id.value : this.id,
       kode: data.kode.present ? data.kode.value : this.kode,
       nama: data.nama.present ? data.nama.value : this.nama,
@@ -363,7 +347,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
 
   @override
   String toString() {
-    return (StringBuffer('VisitorData(')
+    return (StringBuffer('Visitor(')
           ..write('id: $id, ')
           ..write('kode: $kode, ')
           ..write('nama: $nama, ')
@@ -382,7 +366,7 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is VisitorData &&
+      (other is Visitor &&
           other.id == this.id &&
           other.kode == this.kode &&
           other.nama == this.nama &&
@@ -393,16 +377,16 @@ class VisitorData extends DataClass implements Insertable<VisitorData> {
           other.status == this.status);
 }
 
-class VisitorCompanion extends UpdateCompanion<VisitorData> {
+class VisitorsCompanion extends UpdateCompanion<Visitor> {
   final Value<int> id;
-  final Value<String> kode;
+  final Value<String?> kode;
   final Value<String> nama;
   final Value<String> alamat;
   final Value<String> tujuan;
   final Value<DateTime?> tglMasuk;
   final Value<DateTime?> tglKeluar;
   final Value<String> status;
-  const VisitorCompanion({
+  const VisitorsCompanion({
     this.id = const Value.absent(),
     this.kode = const Value.absent(),
     this.nama = const Value.absent(),
@@ -412,21 +396,20 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     this.tglKeluar = const Value.absent(),
     this.status = const Value.absent(),
   });
-  VisitorCompanion.insert({
+  VisitorsCompanion.insert({
     this.id = const Value.absent(),
-    required String kode,
+    this.kode = const Value.absent(),
     required String nama,
     required String alamat,
     required String tujuan,
     this.tglMasuk = const Value.absent(),
     this.tglKeluar = const Value.absent(),
     required String status,
-  }) : kode = Value(kode),
-       nama = Value(nama),
+  }) : nama = Value(nama),
        alamat = Value(alamat),
        tujuan = Value(tujuan),
        status = Value(status);
-  static Insertable<VisitorData> custom({
+  static Insertable<Visitor> custom({
     Expression<int>? id,
     Expression<String>? kode,
     Expression<String>? nama,
@@ -448,9 +431,9 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     });
   }
 
-  VisitorCompanion copyWith({
+  VisitorsCompanion copyWith({
     Value<int>? id,
-    Value<String>? kode,
+    Value<String?>? kode,
     Value<String>? nama,
     Value<String>? alamat,
     Value<String>? tujuan,
@@ -458,7 +441,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
     Value<DateTime?>? tglKeluar,
     Value<String>? status,
   }) {
-    return VisitorCompanion(
+    return VisitorsCompanion(
       id: id ?? this.id,
       kode: kode ?? this.kode,
       nama: nama ?? this.nama,
@@ -502,7 +485,7 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
 
   @override
   String toString() {
-    return (StringBuffer('VisitorCompanion(')
+    return (StringBuffer('VisitorsCompanion(')
           ..write('id: $id, ')
           ..write('kode: $kode, ')
           ..write('nama: $nama, ')
@@ -519,18 +502,18 @@ class VisitorCompanion extends UpdateCompanion<VisitorData> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $VisitorTable visitor = $VisitorTable(this);
+  late final $VisitorsTable visitors = $VisitorsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [visitor];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [visitors];
 }
 
-typedef $$VisitorTableCreateCompanionBuilder =
-    VisitorCompanion Function({
+typedef $$VisitorsTableCreateCompanionBuilder =
+    VisitorsCompanion Function({
       Value<int> id,
-      required String kode,
+      Value<String?> kode,
       required String nama,
       required String alamat,
       required String tujuan,
@@ -538,10 +521,10 @@ typedef $$VisitorTableCreateCompanionBuilder =
       Value<DateTime?> tglKeluar,
       required String status,
     });
-typedef $$VisitorTableUpdateCompanionBuilder =
-    VisitorCompanion Function({
+typedef $$VisitorsTableUpdateCompanionBuilder =
+    VisitorsCompanion Function({
       Value<int> id,
-      Value<String> kode,
+      Value<String?> kode,
       Value<String> nama,
       Value<String> alamat,
       Value<String> tujuan,
@@ -550,9 +533,9 @@ typedef $$VisitorTableUpdateCompanionBuilder =
       Value<String> status,
     });
 
-class $$VisitorTableFilterComposer
-    extends Composer<_$AppDatabase, $VisitorTable> {
-  $$VisitorTableFilterComposer({
+class $$VisitorsTableFilterComposer
+    extends Composer<_$AppDatabase, $VisitorsTable> {
+  $$VisitorsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -600,9 +583,9 @@ class $$VisitorTableFilterComposer
   );
 }
 
-class $$VisitorTableOrderingComposer
-    extends Composer<_$AppDatabase, $VisitorTable> {
-  $$VisitorTableOrderingComposer({
+class $$VisitorsTableOrderingComposer
+    extends Composer<_$AppDatabase, $VisitorsTable> {
+  $$VisitorsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -650,9 +633,9 @@ class $$VisitorTableOrderingComposer
   );
 }
 
-class $$VisitorTableAnnotationComposer
-    extends Composer<_$AppDatabase, $VisitorTable> {
-  $$VisitorTableAnnotationComposer({
+class $$VisitorsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VisitorsTable> {
+  $$VisitorsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -684,46 +667,43 @@ class $$VisitorTableAnnotationComposer
       $composableBuilder(column: $table.status, builder: (column) => column);
 }
 
-class $$VisitorTableTableManager
+class $$VisitorsTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $VisitorTable,
-          VisitorData,
-          $$VisitorTableFilterComposer,
-          $$VisitorTableOrderingComposer,
-          $$VisitorTableAnnotationComposer,
-          $$VisitorTableCreateCompanionBuilder,
-          $$VisitorTableUpdateCompanionBuilder,
-          (
-            VisitorData,
-            BaseReferences<_$AppDatabase, $VisitorTable, VisitorData>,
-          ),
-          VisitorData,
+          $VisitorsTable,
+          Visitor,
+          $$VisitorsTableFilterComposer,
+          $$VisitorsTableOrderingComposer,
+          $$VisitorsTableAnnotationComposer,
+          $$VisitorsTableCreateCompanionBuilder,
+          $$VisitorsTableUpdateCompanionBuilder,
+          (Visitor, BaseReferences<_$AppDatabase, $VisitorsTable, Visitor>),
+          Visitor,
           PrefetchHooks Function()
         > {
-  $$VisitorTableTableManager(_$AppDatabase db, $VisitorTable table)
+  $$VisitorsTableTableManager(_$AppDatabase db, $VisitorsTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer:
-              () => $$VisitorTableFilterComposer($db: db, $table: table),
+              () => $$VisitorsTableFilterComposer($db: db, $table: table),
           createOrderingComposer:
-              () => $$VisitorTableOrderingComposer($db: db, $table: table),
+              () => $$VisitorsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer:
-              () => $$VisitorTableAnnotationComposer($db: db, $table: table),
+              () => $$VisitorsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<String> kode = const Value.absent(),
+                Value<String?> kode = const Value.absent(),
                 Value<String> nama = const Value.absent(),
                 Value<String> alamat = const Value.absent(),
                 Value<String> tujuan = const Value.absent(),
                 Value<DateTime?> tglMasuk = const Value.absent(),
                 Value<DateTime?> tglKeluar = const Value.absent(),
                 Value<String> status = const Value.absent(),
-              }) => VisitorCompanion(
+              }) => VisitorsCompanion(
                 id: id,
                 kode: kode,
                 nama: nama,
@@ -736,14 +716,14 @@ class $$VisitorTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required String kode,
+                Value<String?> kode = const Value.absent(),
                 required String nama,
                 required String alamat,
                 required String tujuan,
                 Value<DateTime?> tglMasuk = const Value.absent(),
                 Value<DateTime?> tglKeluar = const Value.absent(),
                 required String status,
-              }) => VisitorCompanion.insert(
+              }) => VisitorsCompanion.insert(
                 id: id,
                 kode: kode,
                 nama: nama,
@@ -768,24 +748,24 @@ class $$VisitorTableTableManager
       );
 }
 
-typedef $$VisitorTableProcessedTableManager =
+typedef $$VisitorsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $VisitorTable,
-      VisitorData,
-      $$VisitorTableFilterComposer,
-      $$VisitorTableOrderingComposer,
-      $$VisitorTableAnnotationComposer,
-      $$VisitorTableCreateCompanionBuilder,
-      $$VisitorTableUpdateCompanionBuilder,
-      (VisitorData, BaseReferences<_$AppDatabase, $VisitorTable, VisitorData>),
-      VisitorData,
+      $VisitorsTable,
+      Visitor,
+      $$VisitorsTableFilterComposer,
+      $$VisitorsTableOrderingComposer,
+      $$VisitorsTableAnnotationComposer,
+      $$VisitorsTableCreateCompanionBuilder,
+      $$VisitorsTableUpdateCompanionBuilder,
+      (Visitor, BaseReferences<_$AppDatabase, $VisitorsTable, Visitor>),
+      Visitor,
       PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$VisitorTableTableManager get visitor =>
-      $$VisitorTableTableManager(_db, _db.visitor);
+  $$VisitorsTableTableManager get visitors =>
+      $$VisitorsTableTableManager(_db, _db.visitors);
 }

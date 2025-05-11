@@ -50,29 +50,32 @@ class _ScannerState extends State<Scanner> {
             overlay: QrScannerOverlayShape(
               borderColor: Colors.white,
               borderRadius: 10,
-              borderLength: 30,
+              borderLength: 18,
               borderWidth: 10,
             ),
           ),
           Align(
             alignment: Alignment.topCenter,
             child: Container(
-              height: 200,
-              margin: EdgeInsets.only(top:30),
+              padding: EdgeInsets.only(left:25, right:25),
+              height: 80,
               color: Colors.grey[200],
+              alignment: Alignment.center,
               child: Text(
                 "Pastikan kartu tamu anda benar, serta tidak rusak.",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
+                  fontSize: 19,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.black,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
+              padding: EdgeInsets.all(20),
               color: Colors.black.withOpacity(0.3),
               child: Text(
                 "Scan QR Code",
@@ -81,6 +84,7 @@ class _ScannerState extends State<Scanner> {
                   fontWeight: FontWeight.w500,
                   color: Colors.white,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),

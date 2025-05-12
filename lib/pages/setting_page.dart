@@ -1,14 +1,37 @@
 import 'package:final_project/bloc/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 
-class SettingPage extends StatelessWidget {
+class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
+
+  @override
+  State<SettingPage> createState() => _SettingPageState();
+}
+
+class _SettingPageState extends State<SettingPage> {
+  List<BluetoothDevice> devices = [];
+  BluetoothDevice? selectedDevice;
+  BlueThermalPrinter printer = BlueThermalPrinter.instance;
+  bool isConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getDevices();
+  }
+
+  void getDevices() async {
+    devices = await printer.getBondedDevices();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xff007D3C),
         title: const Text(
           'Setting',
           style: TextStyle(
@@ -17,7 +40,16 @@ class SettingPage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Color(0xff007D3C),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: Icon(
+              context.watch<ThemeCubit>().state == ThemeMode.dark
+                    ? Icons.dark_mode
+                    : Icons.light_mode,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(18.0),
@@ -60,6 +92,37 @@ class SettingPage extends StatelessWidget {
                                     : 'Light Mode Enabled'),
                               ),
                             );
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Divider(
+                      height: 1,
+                      color: Colors.black54,
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      'Printer',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row (
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          child: Text('Printer Name'),
+                          onPressed: () => {},
+                        ),
+                        TextButton(
+                          child: Text(isConnected ? 'Connected' : 'Disconnect'),
+                          onPressed: () async {
+                            await printer.connect(selectedDevice!);
+                            setState(() {
+                              isConnected = !isConnected;
+                            });
                           },
                         ),
                       ],

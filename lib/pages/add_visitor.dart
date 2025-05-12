@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:final_project/db/app_db.dart';
 import 'package:final_project/db/visitor_db.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AddVisitor extends StatefulWidget {
   final String? kode;
@@ -26,10 +28,14 @@ class AddVisitor extends StatefulWidget {
 
 class _AddVisitorState extends State<AddVisitor> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  List<BluetoothDevice> devices = [];
+  BluetoothDevice? selectedDevice;
+  BlueThermalPrinter printer = BlueThermalPrinter.instance;
   TextEditingController namaController = TextEditingController();
   TextEditingController alamatController = TextEditingController();
   TextEditingController tujuanController = TextEditingController();
   var typeVisitor = 'Masuk';
+  var nomor = 'A' + DateFormat('yyMMdd').format(DateTime.now()) + DateFormat('mmss').format(DateTime.now());
 
   final db = VisitorDb(getIt<AppDatabase>());
   final visitors = <Visitor>[];
@@ -43,7 +49,13 @@ class _AddVisitorState extends State<AddVisitor> {
     alamatController.text = widget.alamat ?? '';
     tujuanController.text = widget.tujuan ?? '';
     getVisitors();
+    getDevices();
     super.initState();
+  }
+
+  void getDevices() async {
+    devices = await printer.getBondedDevices();
+    setState(() {});
   }
 
   Future<void> getVisitors() async {
@@ -77,7 +89,7 @@ class _AddVisitorState extends State<AddVisitor> {
       );
       await db.addVisitor(visitor);
       await getVisitors();
-      print('APA INI : ' + visitor.toString());
+      print('APA INI : ' + visitors.toString());
     } catch (e) {
       print(e);
     }
@@ -111,6 +123,7 @@ class _AddVisitorState extends State<AddVisitor> {
                     margin: EdgeInsets.only(top: 0),
                     child: Column(
                       children: [
+                        SizedBox(height: 10),
                         Card(
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -129,7 +142,7 @@ class _AddVisitorState extends State<AddVisitor> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 TextFormField(
                   controller: namaController,
                   decoration: InputDecoration(
@@ -172,18 +185,73 @@ class _AddVisitorState extends State<AddVisitor> {
                     ),
                   ),
                 ),
+                SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
+                  height: 60,
                   child: FilledButton(
-                    child: Text('Simpan'),
-                    onPressed: () {
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.save
+                        ),
+                        SizedBox(width: 5,),
+                        Text(
+                          'Simpan',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Text(
+                          '|',
+                          style: TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Icon(
+                          Icons.print
+                        ),
+                        SizedBox(width: 5,),
+                        Text(
+                          'Print',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    onPressed: () async {
+                      if ((await printer.isConnected)!) {
+                        printer.printNewLine();
+                        printer.printCustom('Aplikasi Buku Tamu', 2, 1);
+                        printer.printNewLine();
+                        printer.printQRcode(nomor, 250, 250, 1);
+                        printer.printCustom(nomor, 2, 1);
+                        printer.printNewLine();
+                        printer.printNewLine();
+                        printer.printCustom('Nama   : IAL23100030', 1, 0);
+                        printer.printCustom('Alamat : IAL23100030', 1, 0);
+                        printer.printCustom('Tujuan : IAL23100030', 1, 0);
+                        printer.printNewLine();
+                        printer.printNewLine();
+                        printer.printNewLine();
+                        printer.printNewLine();
+                      }
                       addVisitor(
-                        kode: 'A',
+                        kode: nomor,
                         nama: namaController.text,
                         alamat: alamatController.text,
                         tujuan: tujuanController.text,
                         status: typeVisitor,
                       );
+                      namaController.clear();
+                      alamatController.clear();
+                      tujuanController.clear();
                     }, 
                   ),
                 ),

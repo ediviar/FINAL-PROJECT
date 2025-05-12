@@ -1,7 +1,9 @@
+import 'package:final_project/bloc/theme_cubit.dart';
 import 'package:final_project/pages/list_page.dart';
 import 'package:final_project/pages/tamu_page.dart';
 import 'package:final_project/templates/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -51,6 +53,11 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         actions: [
+          Icon(
+            context.watch<ThemeCubit>().state == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+          ),
           IconButton(
             icon: Icon(
               Icons.settings,

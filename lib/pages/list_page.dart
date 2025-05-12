@@ -1,9 +1,8 @@
-import 'package:drift/drift.dart';
 import 'package:final_project/db/visitor_db.dart';
 import 'package:final_project/db/app_db.dart';
 import 'package:final_project/main.dart';
-import 'package:final_project/pages/add_visitor.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ListPage extends StatefulWidget {
   const ListPage({super.key});
@@ -35,107 +34,60 @@ class _ListPageState extends State<ListPage> {
     }
   }
 
-  Future<void> delete(int id) async {
-    try {
-      await db.deleteVisitor(id);
-      await getVisitors();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> addVisitor({
-    String kode = '',
-    String nama = '',
-    String alamat = '',
-    String tujuan = '',
-    String status = 'Masuk',
-  }) async {
-    try {
-      final visitor = VisitorsCompanion(
-        kode: Value(kode),
-        nama: Value(nama),
-        alamat: Value(alamat),
-        tujuan: Value(tujuan),
-        tglMasuk: Value(now),
-        tglKeluar: Value(null),
-        status: Value(status),
-      );
-      await db.addVisitor(visitor);
-      await getVisitors();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> editVisitor({
-    required int id,
-    String kode = '',
-    String nama = '',
-    String alamat = '',
-    String tujuan = '',
-    String status = 'Masuk',
-  }) async {
-    try {
-      final visitor = VisitorsCompanion(
-        id: Value(id),
-        kode: Value(kode),
-        nama: Value(nama),
-        alamat: Value(alamat),
-        tujuan: Value(tujuan),
-        tglMasuk: Value(now),
-        tglKeluar: Value(null),
-        status: Value(status),
-      );
-      await db.updateVisitor(visitor);
-      await getVisitors();
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(10),
         child: ListView.separated(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(5),
           itemCount: visitors.length,
           separatorBuilder: (_, __) => SizedBox(height: 16), 
           itemBuilder: (_, index) => Card(
             child: ListTile(
+              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              leading: CircleAvatar(
+                child: Text(
+                  visitors[index].nama[0].toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               title: Text(visitors[index].kode!),
-              subtitle: Text(visitors[index].nama),
+              subtitle: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(visitors[index].nama),
+                  SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Text('Masuk : '),
+                      Text(DateFormat('dd-MM-yyyy  hh:mm').format(visitors[index].tglMasuk!)),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Keluar : '),
+                      Text(
+                        visitors[index].tglKeluar == null ? "" : DateFormat('dd-MM-yyyy  hh:mm').format(visitors[index].tglKeluar!)
+                      ),
+                    ],
+                  ),
+                ],
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddVisitor(),
-                        ),
-                      );
-                      if(result != null) {
-                        editVisitor(
-                          id: visitors[index].id,
-                          kode: result['kode'],
-                          nama: result['nama'],
-                          alamat: result['alamat'],
-                          tujuan: result['tujuan'],
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.edit),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      delete(visitors[index].id);
-                    },
-                    icon: Icon(Icons.delete),
-                  ),
+                  Text(
+                    visitors[index].status,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: visitors[index].status == 'Masuk' ? Colors.green : Colors.red
+                    ),
+                  )
                 ],
               )
             ),
